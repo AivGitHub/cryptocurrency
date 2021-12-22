@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# export ENVIRONMENTS_PATH="environments/ubuntu_20.04/"
+
+echo "Configuring environments.."
+mkdir environments
+python3 -m venv environments/ubuntu_20.04/
+
+echo "Downloading pip requirements.."
+source environments/ubuntu_20.04/bin/activate
+pip install -r requirements.txt

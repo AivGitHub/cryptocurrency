@@ -1,0 +1,4 @@
+#!/bin/bash
+
+source environments/ubuntu_20.04/bin/activate
+python
