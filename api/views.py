@@ -40,7 +40,6 @@ class WalletViews(APIView):
         serializer = WalletSerializer(data=request_data, many=True, partial=True)
 
         if serializer.is_valid():
-            print(serializer.validated_data)
             serializer.save()
 
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)

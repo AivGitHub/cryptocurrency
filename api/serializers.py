@@ -17,9 +17,8 @@ class WalletSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
     address = serializers.CharField(max_length=36)
     public_key_hex = serializers.CharField(max_length=256)
-    # coin = serializers.PrimaryKeyRelatedField(queryset=Coin.objects.all())
+    coin = serializers.PrimaryKeyRelatedField(queryset=Coin.objects.all())
     # coin = CoinSerializer(many=False, read_only=True)
-    coin = CoinSerializer(many=False, read_only=True)
 
     class Meta:
         model = Wallet

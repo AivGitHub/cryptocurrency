@@ -1,0 +1,18 @@
+[
+{
+    "model": "cryptocurrency.coin",
+    "pk": 1,
+    "fields": {
+        "name": "Bitcoin",
+        "symbol": "BTC"
+    }
+},
+{
+    "model": "cryptocurrency.coin",
+    "pk": 2,
+    "fields": {
+        "name": "Ethereum",
+        "symbol": "ETH"
+    }
+}
+]

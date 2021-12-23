@@ -7,6 +7,7 @@ import bip32utils
 import ecdsa
 from django.db import models
 from mnemonic import Mnemonic
+from mptt.models import MPTTModel, TreeForeignKey
 
 
 class Coin(models.Model):
@@ -20,11 +21,12 @@ class Coin(models.Model):
         return self.name
 
 
-class Wallet(models.Model):
+class Wallet(MPTTModel):
     address = models.CharField(max_length=36, null=True)
     public_key_hex = models.CharField(max_length=256)
     time_created = models.DateTimeField(auto_now_add=True)
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
 
     def __str__(self) -> str:
         return self.address

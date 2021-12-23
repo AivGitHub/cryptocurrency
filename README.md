@@ -3,7 +3,8 @@ Application for working with cryptocurrency.
 
 ## Installation
 1. Run shell script "install": ```./bin/install``` from the project directory.
-2. Add "rest_framework". "cryptocurrency" and "api" to INSTALLED_APPS in project settings.py: 
+2. If django not project is not installed - initialize it.
+3. Add "rest_framework". "cryptocurrency" and "api" to INSTALLED_APPS in project settings.py: 
 ```
 INSTALLED_APPS = [
     ...
@@ -33,8 +34,10 @@ DATABASES = {
     }
 }
 ```
-If you don't want to use PostgreSQL delete requirement from requirements.txt
-5. Add to "path('api/', include('api.urls'))" to "urlpatterns" in project urls.py:
+If you don't want to use PostgreSQL delete "psycopg2-binary==2.9.2" from requirements.txt
+5. Migrate application "cryptocurrency" and
+install fixtures: ```./manage.py loaddata cryptocurrency/fixtures/coins.json```
+6. Add to "path('api/', include('api.urls'))" to "urlpatterns" in project urls.py:
 ```
 from django.contrib import admin
 from django.urls import path, include
@@ -49,6 +52,14 @@ Launch the server with the following command from the project directory:
 ```bash
 ./bin/runserver
 ```
+Now server ready to accept requests:
+
+ ```curl -X POST -H "Content-Type: application/json" http://127.0.0.1:8000/api/wallet/ -d "{\"seed\":\"test_seeeeed\", \"symbol\": \"BTC\"}"```
+
+---
+
+```curl -X GET -H "Content-Type: application/json" http://127.0.0.1:8000/api/wallet/```
+
 ## Conclusion
 
 If you have a bug or feature request contact me.
