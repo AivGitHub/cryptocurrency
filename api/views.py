@@ -4,6 +4,7 @@ from rest_framework import status
 
 from api.serializers import WalletSerializer
 from cryptocurrency.models import Wallet, Coin
+from django.db.utils import IntegrityError
 
 
 class WalletViews(APIView):
@@ -12,6 +13,7 @@ class WalletViews(APIView):
 
         _seed = request.data.get('seed', '')
         _symbol = request.data.get('symbol')
+        _parent = request.data.get('parent')
 
         try:
             coin = Coin.objects.get(symbol=_symbol)
@@ -19,37 +21,48 @@ class WalletViews(APIView):
             return Response({"status": "error", "data": f'No Coin \'{_symbol}\' found'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        request_data = {'coin': coin}
+
         try:
-            key = Wallet.get_address_from_seed(seed=_seed.encode('utf-8'))
+            if _parent:
+                # Seed is not stored in database so firstly getting parent BIP32Key is needed
+                root_key = Wallet.get_from_seed(seed=_parent.encode('utf-8'), symbol=_symbol)
+                key = Wallet.get_from_seed(parent_seed=_parent.encode('utf-8'), symbol=_symbol)
+
+                parent_wallet = Wallet.objects.get(address=root_key.Address())
+
+                request_data.update({'parent': parent_wallet})
+            else:
+                key = Wallet.get_from_seed(seed=_seed.encode('utf-8'), symbol=_symbol)
         except ValueError:
             return Response({"status": "error", "data": f'Seed must be at least 128 bits'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except Wallet.DoesNotExist:
+            return Response({"status": "error", "data": f'No wallet (parent) found for seed \'{_parent}\''},
                             status=status.HTTP_400_BAD_REQUEST)
 
         address = key.Address()
         public_key_hex = key.PublicKey().hex()
-        # Not for saving. Need to Show to user generated key
+        # Not for saving. Need to show to user generated key
         private_key = key.PrivateKey().hex()
 
-        request_data = [{
+        request_data.update({
             'address': address,
-            'public_key_hex': public_key_hex,
-            'coin': 1,
-            'coin_id': 1
-        }]
+            'public_key_hex': public_key_hex
+        })
 
-        serializer = WalletSerializer(data=request_data, many=True, partial=True)
+        try:
+            wallet = Wallet.objects.create(**request_data)
+            wallet.save()
+        except IntegrityError:
+            return Response({"status": "error", "data": "Wallet already exists"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if serializer.is_valid():
-            serializer.save()
+        return Response({"status": "success", "data": request.data}, status=status.HTTP_200_OK)
 
-            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
-        else:
-            return Response({"status": "error", "data": serializer.data}, status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request, address_id=None) -> Response:
 
-    def get(self, request, id=None) -> Response:
-
-        if id:
-            wallets = Wallet.objects.filter(pk=id)
+        if address_id:
+            wallets = Wallet.objects.filter(pk=address_id)
         else:
             wallets = Wallet.objects.all()
 

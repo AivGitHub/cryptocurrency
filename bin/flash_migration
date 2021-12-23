@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# TODO: Param instead of 'cryptocurrency'
+
+source environments/ubuntu_20.04/bin/activate
+
+find cryptocurrency/ -path "*/migrations/*.py" -not -name "__init__.py" -delete
+find cryptocurrency/ -path "*/migrations/*.pyc" -not -name "__init__.py" -delete
+
+./manage.py migrate --fake cryptocurrency zero
+./manage.py makemigrations cryptocurrency
+./manage.py migrate cryptocurrency
+
+./manage.py loaddata cryptocurrency/fixtures/coins.json

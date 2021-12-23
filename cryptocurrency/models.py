@@ -1,18 +1,17 @@
 import hashlib
-import os
 
 import base58
 import binascii
-import bip32utils
 import ecdsa
 from django.db import models
-from mnemonic import Mnemonic
 from mptt.models import MPTTModel, TreeForeignKey
+
+from cryptocurrency.utils import get_BIP32Key_from_seed
 
 
 class Coin(models.Model):
     name = models.CharField(max_length=256)
-    symbol = models.CharField(max_length=8)
+    symbol = models.CharField(max_length=8, unique=True)
 
     class Meta:
         abstract = False
@@ -22,7 +21,7 @@ class Coin(models.Model):
 
 
 class Wallet(MPTTModel):
-    address = models.CharField(max_length=36, null=True)
+    address = models.CharField(max_length=36, null=True, unique=True)
     public_key_hex = models.CharField(max_length=256)
     time_created = models.DateTimeField(auto_now_add=True)
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE)
@@ -51,16 +50,8 @@ class Wallet(MPTTModel):
         return base58.b58encode(binascii.unhexlify(appended_checksum)).decode('utf-8')
 
     @staticmethod
-    def get_address_from_seed(seed=None) -> bip32utils:
-        mnemonic = Mnemonic('english')
-
-        if not seed:
-            seed = mnemonic.to_seed(base58.b58encode(os.urandom(90)))
-
-        # root_key = bip32utils.BIP32Key.fromEntropy(seed)
-        # root_address = root_key.Address()
-        # root_private_key = root_key.PrivateKey().hex()
-        # root_public_hex = root_key.PublicKey().hex()
-        # root_private_wif = root_key.WalletImportFormat()
-
-        return bip32utils.BIP32Key.fromEntropy(seed)
+    def get_from_seed(seed: bytes = None, parent_seed: bytes = None, symbol: str = 'BTC'):
+        if symbol == 'BTC':
+            return get_BIP32Key_from_seed(seed=seed, parent_seed=parent_seed)
+        else:
+            raise NotImplementedError

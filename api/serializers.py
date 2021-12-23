@@ -1,3 +1,5 @@
+from abc import ABC
+
 from rest_framework import serializers
 
 from cryptocurrency.models import Wallet, Coin
@@ -17,8 +19,8 @@ class WalletSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
     address = serializers.CharField(max_length=36)
     public_key_hex = serializers.CharField(max_length=256)
-    coin = serializers.PrimaryKeyRelatedField(queryset=Coin.objects.all())
-    # coin = CoinSerializer(many=False, read_only=True)
+    coin = CoinSerializer(many=False, read_only=True)
+    child = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
 
     class Meta:
         model = Wallet

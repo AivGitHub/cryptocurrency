@@ -3,8 +3,10 @@ Application for working with cryptocurrency.
 
 ## Installation
 1. Run shell script "install": ```./bin/install``` from the project directory.
-2. If django not project is not installed - initialize it.
-3. Add "rest_framework". "cryptocurrency" and "api" to INSTALLED_APPS in project settings.py: 
+2. If django not project is not initialized - initialize it.
+3. Add "rest_framework".
+"cryptocurrency", ""
+"api" to INSTALLED_APPS in project settings.py: 
 ```
 INSTALLED_APPS = [
     ...
@@ -48,17 +50,24 @@ urlpatterns = [
 ]
 ```
 ## Usage
-Launch the server with the following command from the project directory:
+1. Launch the server with the following command from the project directory:
 ```bash
 ./bin/runserver
 ```
-Now server ready to accept requests:
+2. Now server ready to accept requests:
 
  ```curl -X POST -H "Content-Type: application/json" http://127.0.0.1:8000/api/wallet/ -d "{\"seed\":\"test_seeeeed\", \"symbol\": \"BTC\"}"```
 
 ---
 
 ```curl -X GET -H "Content-Type: application/json" http://127.0.0.1:8000/api/wallet/```
+
+3. If you want to add child wallet just add "parent" (seed) to
+data in POST request.
+You need to know seed of parent wallet because seed is NOT stored in database.
+
+## Information
+Seed/private key or other private values don't store in database!
 
 ## Conclusion
 
