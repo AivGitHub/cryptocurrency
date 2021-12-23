@@ -2,8 +2,8 @@ import hashlib
 
 import base58
 import binascii
-import ecdsa
 from django.db import models
+import ecdsa
 from mptt.models import MPTTModel, TreeForeignKey
 
 from cryptocurrency.utils import get_BIP32Key_from_seed

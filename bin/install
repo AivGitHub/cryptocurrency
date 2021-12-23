@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# TODO: Move 'environments/ubuntu_20.04/' to environment variable ENVIRONMENTS_PATH
 # export ENVIRONMENTS_PATH="environments/ubuntu_20.04/"
 
 echo "Configuring environments.."
