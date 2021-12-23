@@ -3,6 +3,7 @@ import os
 import base58
 import bip32utils
 from mnemonic import Mnemonic
+from eth_account import Account
 
 
 def get_BIP32Key_from_seed(seed: bytes = None, parent_seed: bytes = None) -> bip32utils:
@@ -16,3 +17,11 @@ def get_BIP32Key_from_seed(seed: bytes = None, parent_seed: bytes = None) -> bip
         seed = mnemonic.to_seed(base58.b58encode(os.urandom(90)))
 
     return bip32utils.BIP32Key.fromEntropy(seed)
+
+
+def get_eth_account(seed: bytes = None, parent_seed: bytes = None) -> Account:
+
+    if parent_seed:
+        raise NotImplementedError
+
+    return Account.create(seed)

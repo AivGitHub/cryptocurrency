@@ -7,6 +7,7 @@ from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 
 from cryptocurrency.utils import get_BIP32Key_from_seed
+from cryptocurrency.utils import get_eth_account
 
 
 class Coin(models.Model):
@@ -21,7 +22,7 @@ class Coin(models.Model):
 
 
 class Wallet(MPTTModel):
-    address = models.CharField(max_length=36, null=True, unique=True)
+    address = models.CharField(max_length=64, null=True, unique=True)
     public_key_hex = models.CharField(max_length=256)
     time_created = models.DateTimeField(auto_now_add=True)
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE)
@@ -50,8 +51,21 @@ class Wallet(MPTTModel):
         return base58.b58encode(binascii.unhexlify(appended_checksum)).decode('utf-8')
 
     @staticmethod
-    def get_from_seed(seed: bytes = None, parent_seed: bytes = None, symbol: str = 'BTC'):
+    def get_from_seed(seed: bytes = None, parent_seed: bytes = None, symbol: str = 'BTC') -> dict:
         if symbol == 'BTC':
-            return get_BIP32Key_from_seed(seed=seed, parent_seed=parent_seed)
+            btc = get_BIP32Key_from_seed(seed=seed, parent_seed=parent_seed)
+
+            return {
+                'address': btc.Address(),
+                'public_key_hex': btc.PublicKey().hex(),
+                'private_key_hex': btc.PrivateKey().hex()
+            }
+        elif symbol == 'ETH':
+            eth = get_eth_account(seed=seed, parent_seed=parent_seed)
+            return {
+                'address': eth.address,
+                'public_key_hex': eth.key.hex(),
+                'private_key_hex': eth.privateKey.hex()
+            }
         else:
             raise NotImplementedError

@@ -29,7 +29,7 @@ class WalletViews(APIView):
                 root_key = Wallet.get_from_seed(seed=_parent.encode('utf-8'), symbol=_symbol)
                 key = Wallet.get_from_seed(parent_seed=_parent.encode('utf-8'), symbol=_symbol)
 
-                parent_wallet = Wallet.objects.get(address=root_key.Address())
+                parent_wallet = Wallet.objects.get(address=root_key.get('address'))
 
                 request_data.update({'parent': parent_wallet})
             else:
@@ -41,10 +41,10 @@ class WalletViews(APIView):
             return Response({"status": "error", "data": f'No wallet (parent) found for seed \'{_parent}\''},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        address = key.Address()
-        public_key_hex = key.PublicKey().hex()
+        address = key.get('address')
+        public_key_hex = key.get('public_key_hex')
         # Not for saving. Need to show to user generated key
-        private_key = key.PrivateKey().hex()
+        private_key_hex = key.get('private_key_hex')
 
         request_data.update({
             'address': address,
