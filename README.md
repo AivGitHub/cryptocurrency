@@ -75,8 +75,10 @@ data in POST request.
 You need to know seed of parent wallet because seed is NOT stored in database.
 
 ## Information
-Seed/private key or other private values don't store in database!
-
+1. Seed/private key or other private values don't store in database!
+2. To add coin you need to add it to 'cryptocurrency/fixtures/coins.json',
+./manage.py loaddata cryptocurrency/fixtures/coins.json and modify method 'get_from_seed'
+in Wallet class.
 ## Conclusion
 
 If you have a bug or feature request contact me.
