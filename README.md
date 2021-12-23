@@ -36,6 +36,14 @@ DATABASES = {
     }
 }
 ```
+If you need tests you should alter role createdb to WALLET_USER.
+
+```
+        'TEST': {
+            'NAME': 'TEST_WALLET_DATABASE',
+        },
+```
+
 If you don't want to use PostgreSQL delete "psycopg2-binary==2.9.2" from requirements.txt
 5. Migrate application "cryptocurrency" and
 install fixtures: ```./manage.py loaddata cryptocurrency/fixtures/coins.json```
